@@ -1,0 +1,29 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["react-app", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "prettier"],
+  "rules": {
+    "semi": "error",
+    "react/prop-types": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 120,
+        "trailingComma": "all",
+        "semi": true,
+        "jsxSingleQuote": true,
+        "singleQuote": true,
+        "useTabs": true,
+        "bracketSpacing": true,
+        "jsxBracketSameLine": true
+      }
+    ]
+  }
+}
