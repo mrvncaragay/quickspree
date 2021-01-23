@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeStackNavigator from './src/navigations/HomeStackNavigator';
-import { StyleSheet, SafeAreaView, Platform, StatusBar, LogBox, Text } from 'react-native';
+import { StyleSheet, SafeAreaView, Platform, StatusBar, LogBox } from 'react-native';
 import { StateProvider } from './src/context';
 
 import theme from './src/theme';
