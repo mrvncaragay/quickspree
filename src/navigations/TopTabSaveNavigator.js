@@ -3,6 +3,7 @@ import { useTheme } from 'react-native-paper';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Save from '../screens/Save/components/Save';
 import Unsaved from '../screens/Save/components/Unsaved';
+import Ocr from '../screens/Save/components/Ocr';
 
 import { useStateValue } from '../context';
 
@@ -22,6 +23,7 @@ const TopTabSaveNavigator = () => {
 					backgroundColor: colors.primary,
 				},
 			}}>
+			<Tab.Screen name='OCR' component={Ocr} />
 			<Tab.Screen name='Add' component={Save} />
 			<Tab.Screen name={`Unsaved`} component={Unsaved} options={{ title: `${unsaved.length || ''} UNSAVED` }} />
 		</Tab.Navigator>

@@ -1,222 +1,114 @@
-import React, { Component } from 'react';
-import { TouchableOpacity, View, Image, Platform } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { TouchableOpacity, View, Image } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-
-//Example
-// import Camera, { Constants } from './src/components/Camera';
-
-// const App = () => {
-// 	return (
-// 		<>
-//
-
-// 			<Camera
-// 				cameraType={Constants.Type.back}
-// 				flashMode={Constants.FlashMode.off}
-// 				autoFocus={Constants.AutoFocus.on}
-// 				whiteBalance={Constants.WhiteBalance.auto}
-// 				ratio={'1:1'}
-// 				quality={0.5}
-// 				// imageWidth={800}
-// 				// onCapture={data => this.saveProfilePhoto(data)}
-// 				// onClose={_ => {
-// 				//   this.setState({showCamera: false});
-// 				// }}
-// 			/>
-// 		</>
-// 	);
-// };
 
 export const Constants = {
 	...RNCamera.Constants,
 };
 
-export default class Camera extends Component {
-	camera = null;
-	state = {
-		cameraType: Constants.Type.back,
-		flashMode: Constants.FlashMode.off,
-		recognizedText: null,
+const Camera = ({ onRead, product }) => {
+	const [readOcr, setReadOcr] = useState(false);
+
+	const onTextSnapshot = () => {
+		setReadOcr(true);
 	};
 
-	componentDidMount() {
-		this.setState({
-			// If enabledOCR is true, then set the cameraType to back only
-			cameraType: this.props.enabledOCR ? Constants.Type.back : this.props.cameraType,
-			flashMode: this.props.flashMode,
-			recognizedText: null,
-		});
-	}
-
-	takePicture = async () => {
-		if (this.camera) {
-			const options = {
-				quality: this.props.quality,
-				base64: true,
-				width: this.props.imageWidth,
-				doNotSave: true,
-				fixOrientation: true,
-				pauseAfterCapture: true,
-			};
-			const data = await this.camera.takePictureAsync(options);
-
-			this.props.onCapture && this.props.onCapture(data.base64, this.state.recognizedText);
-		}
+	const parseAisle = (str) => {
+		const satr = str.replace('-', ' ');
+		const aisle = satr.replace(' - ', ' ');
+		return aisle.split(' ')[1];
 	};
 
-	onTextRecognized(data) {
-		if (this.props.enabledOCR) {
-			console.log('onTextRecognized: ', data.textBlocks);
-			// if (data && data.textBlocks && data.textBlocks.length > 0) {
-			//   this.setState({recognizedText: data});
-			// }
-		}
-	}
+	const handleOnReadOCR = (data) => {
+		if (readOcr && data.textBlocks) {
+			const products = [];
 
-	render() {
-		console.log(this.props.enabledOCR);
-		return (
-			<View style={[styles.camera.container, this.props.style]}>
-				<RNCamera
-					ref={(ref) => {
-						this.camera = ref;
-					}}
-					style={styles.camera.preview}
-					type={this.state.cameraType}
-					flashMode={this.state.flashMode}
-					ratio={this.props.ratio}
-					captureAudio={false}
-					autoFocus={this.props.autoFocus}
-					whiteBalance={this.props.whiteBalance}
-					// androidCameraPermissionOptions={{
-					//   title: 'Permission to use camera',
-					//   message: 'We need your permission to use your camera',
-					//   buttonPositive: 'Ok',
-					//   buttonNegative: 'Cancel',
-					// }}
-					// androidRecordAudioPermissionOptions={{
-					//   title: 'Permission to use audio',
-					//   message: 'We need your permission to use your audio',
-					//   buttonPositive: 'Ok',
-					//   buttonNegative: 'Cancel',
-					// }}
-					onTextRecognized={
-						(data) => {
-							if (data && data.textBlocks && data.textBlocks.length > 0) {
-								data.textBlocks.map((text) => console.log(text.value));
-							}
-						}
-						// this.props.enabledOCR
-						//   ? (data) => this.onTextRecognized(data)
-						//   : undefined
+			data.textBlocks.map((text) => {
+				let productName = null;
+				const { value } = text;
+
+				if (value.startsWith('Aisle')) {
+					product.aisleName = parseAisle(value);
+				}
+
+				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
+					productName = value.replace(/ *\([^)]*\) */g, '');
+					const index = productName.indexOf('Aisle');
+
+					if (index > 0) {
+						const str = productName.slice(index);
+						product.aisleName = parseAisle(str);
+						productName = productName.slice(0, index);
 					}
-				/>
 
-				{/* <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center'}}>
-          <TouchableOpacity
-            style={styles.camera.capture}
-            onPress={(_) => {
-              switch (this.state.flashMode) {
-                case Constants.FlashMode.off:
-                  this.setState({flashMode: Constants.FlashMode.auto});
-                  break;
+					product.productName = productName
+						.replace(/^\s+|\s+$/g, '')
+						.split(' ')
+						.slice(1)
+						.join(' ');
+				}
 
-                case Constants.FlashMode.auto:
-                  this.setState({flashMode: Constants.FlashMode.on});
-                  break;
+				if (product.aisleName && product.productName) {
+					products.push(product);
 
-                case Constants.FlashMode.on:
-                  this.setState({flashMode: Constants.FlashMode.off});
-                  break;
-              }
-            }}>
-            <Image
-              source={
-                this.state.flashMode === Constants.FlashMode.auto
-                  ? require('../../../assets/camera/flashAuto.png')
-                  : this.state.flashMode === Constants.FlashMode.on
-                  ? require('../../../assets/camera/flashOn.png')
-                  : require('../../../assets/camera/flashOff.png')
-              }
-              style={{width: 30, height: 30}}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
+					product = {
+						...product,
+						aisleName: null,
+						productName: null,
+					};
+				}
+			});
 
-          <TouchableOpacity
-            onPress={this.takePicture.bind(this)}
-            style={styles.camera.capture}>
-            <Image
-              source={require('../../../assets/camera/cameraButton.png')}
-              style={{width: 50, height: 50}}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-          {
-            // If enabledOCR is true, don't allow user to change camera
-            !this.props.enabledOCR ? (
-              <TouchableOpacity
-                style={styles.camera.capture}
-                onPress={(_) => {
-                  if (this.state.cameraType === Constants.Type.back) {
-                    this.setState({cameraType: Constants.Type.front});
-                  } else {
-                    this.setState({cameraType: Constants.Type.back});
-                  }
-                }}>
-                <Image
-                  source={require('../../../assets/camera/cameraFlipIcon.png')}
-                  style={{width: 40, height: 40}}
-                  resizeMode={'contain'}
-                />
-              </TouchableOpacity>
-            ) : (
-              <View style={[styles.camera.capture, {width: 70, height: 70}]} />
-            )
-          }
-        </View>
-        {this.props.onClose && (
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => {
-              this.props.onClose && this.props.onClose();
-            }}>
-            <Icon name={'ios-close'} style={styles.closeButtonIcon} />
-          </TouchableOpacity>
-        )} */}
-			</View>
-		);
-	}
-}
+			onRead(products);
+		}
 
-Camera.propTypes = {
-	cameraType: PropTypes.any,
-	flashMode: PropTypes.any,
-	autoFocus: PropTypes.any,
-	whiteBalance: PropTypes.any,
-	ratio: PropTypes.string,
-	quality: PropTypes.number,
-	imageWidth: PropTypes.number,
-	style: PropTypes.object,
-	onCapture: PropTypes.func,
-	enabledOCR: PropTypes.bool,
-	onClose: PropTypes.func,
-};
+		setReadOcr(false);
+	};
 
-Camera.defaultProps = {
-	cameraType: Constants.Type.back,
-	flashMode: Constants.FlashMode.off,
-	autoFocus: Constants.AutoFocus.on,
-	whiteBalance: Constants.WhiteBalance.auto,
-	ratio: '4:3',
-	quality: 0.5,
-	imageWidth: 768,
-	style: null,
-	onCapture: null,
-	enabledOCR: false,
-	onClose: null,
+	return (
+		<View style={styles.camera.container}>
+			<RNCamera
+				style={styles.camera.preview}
+				type={Constants.Type.back}
+				flashMode={Constants.AutoFocus.off}
+				quality={0.5}
+				captureAudio={false}
+				autoFocus={Constants.AutoFocus.on}
+				whiteBalance={Constants.WhiteBalance.auto}
+				// androidCameraPermissionOptions={{
+				//   title: 'Permission to use camera',
+				//   message: 'We need your permission to use your camera',
+				//   buttonPositive: 'Ok',
+				//   buttonNegative: 'Cancel',
+				// }}
+				// androidRecordAudioPermissionOptions={{
+				//   title: 'Permission to use audio',
+				//   message: 'We need your permission to use your audio',
+				//   buttonPositive: 'Ok',
+				//   buttonNegative: 'Cancel',
+				// }}
+				onTextRecognized={handleOnReadOCR}
+				// onBarCodeRead={(data) => console.log(data)}
+			>
+				{/* <View
+					style={{
+						flex: 1,
+						width: '100%',
+						borderWidth: 1,
+						borderColor: 'black',
+						opacity: 0.5,
+						backgroundColor: 'black',
+					}}></View> */}
+				<TouchableOpacity onPress={onTextSnapshot} style={styles.camera.capture}>
+					<Image
+						source={require('../../assets/camera/cameraButton.png')}
+						style={{ width: 50, height: 50 }}
+						resizeMode={'contain'}
+					/>
+				</TouchableOpacity>
+			</RNCamera>
+		</View>
+	);
 };
 
 const styles = {
@@ -236,28 +128,10 @@ const styles = {
 			alignItems: 'center',
 		},
 		capture: {
-			flex: 0,
-			//backgroundColor: '#f00',
 			padding: 15,
-			paddingHorizontal: 20,
-			alignSelf: 'center',
-			margin: 20,
+			position: 'absolute',
 		},
 	},
-	closeButton: {
-		position: 'absolute',
-		backgroundColor: '#aaaaaab0',
-		width: 50,
-		height: 50,
-		borderRadius: 25,
-		justifyContent: 'center',
-		top: Platform.OS === 'ios' ? 45 : 10,
-		left: 10,
-	},
-	closeButtonIcon: {
-		fontSize: Platform.OS === 'ios' ? 40 : 40,
-		fontWeight: 'bold',
-		alignSelf: 'center',
-		lineHeight: Platform.OS === 'ios' ? 58 : 40,
-	},
 };
+
+export default Camera;
