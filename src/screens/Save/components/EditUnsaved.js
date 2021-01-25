@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { TextInput, Button, IconButton, useTheme } from 'react-native-paper';
 import { useStateValue } from '../../../context';
-import { Store, BarCodeScanner } from '../../../components';
+import { Store, Camera } from '../../../components';
 import { storeData } from '../../../utils/asyncStorage';
 
 const EditUnsaved = ({ route }) => {
+	const { colors } = useTheme();
 	const [{ store, unsaved }, dispatch] = useStateValue();
 	const [product, setProduct] = useState(route.params.product);
 	const [scan, setScan] = useState(false);
@@ -29,11 +30,13 @@ const EditUnsaved = ({ route }) => {
 	};
 
 	const handleBarcodeScan = (info) => {
-		setProduct({
-			...product,
-			barcode: info.data,
-		});
-		setScan(false);
+		if (info) {
+			setProduct({
+				...product,
+				barcode: info.data,
+			});
+			setScan(!scan);
+		}
 	};
 
 	const handleLocation = (coord) => {
@@ -88,6 +91,7 @@ const EditUnsaved = ({ route }) => {
 							</View>
 
 							<TextInput
+								multiline
 								style={styles.input}
 								mode='outlined'
 								dense
@@ -105,24 +109,24 @@ const EditUnsaved = ({ route }) => {
 								onChangeText={(aisleName) => setProduct({ ...product, aisleName })}
 							/>
 
-							{/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-									<TextInput
-										style={[styles.input, { width: '85%' }]}
-										mode='outlined'
-										dense
-										label='Barcode...'
-										disabled
-										value={product.barcode}
-									/>
+							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+								<TextInput
+									style={[styles.input, { width: '85%' }]}
+									mode='outlined'
+									dense
+									label='Barcode...'
+									disabled
+									value={product.barcode}
+								/>
 
-									<IconButton
-										style={{ position: 'relative', top: 5 }}
-										icon='barcode-scan'
-										size={30}
-										color={colors.primary}
-										onPress={() => setScan(true)}
-									/>
-								</View> */}
+								<IconButton
+									style={{ position: 'relative', top: 5 }}
+									icon='barcode-scan'
+									size={30}
+									color={colors.primary}
+									onPress={() => setScan(true)}
+								/>
+							</View>
 
 							<TextInput
 								style={styles.input}
@@ -153,7 +157,7 @@ const EditUnsaved = ({ route }) => {
 					</View>
 				</>
 			) : (
-				<BarCodeScanner handleScan={handleBarcodeScan} />
+				<Camera handleBarcodeScan={handleBarcodeScan} />
 			)}
 		</View>
 	);

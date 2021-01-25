@@ -7,7 +7,7 @@ export const Constants = {
 	...RNCamera.Constants,
 };
 
-const Camera = ({ onRead, product }) => {
+const Camera = ({ onRead, handleBarcodeScan, product }) => {
 	const [readOcr, setReadOcr] = useState(false);
 	const { colors } = useTheme();
 
@@ -96,8 +96,7 @@ const Camera = ({ onRead, product }) => {
 				//   buttonNegative: 'Cancel',
 				// }}
 				onTextRecognized={readOcr ? handleOnReadOCR : null}
-				// onBarCodeRead={(data) => console.log(data)}
-			>
+				onBarCodeRead={handleBarcodeScan}>
 				{({ camera, status, recordAudioPermissionStatus }) => {
 					if (status !== 'READY') return <ActivityIndicator size='large' color={colors.primary} />;
 					return (
