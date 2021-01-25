@@ -14,9 +14,16 @@ const Camera = ({ onRead, product }) => {
 	};
 
 	const parseAisle = (str) => {
-		const satr = str.replace('-', ' ');
-		const aisle = satr.replace(' - ', ' ');
-		return aisle.split(' ')[1];
+		const satr = str.replace(/-/g, '');
+		return satr.split(' ')[1];
+	};
+
+	const findProductSize = (str) => {
+		const arr = str.match(/\(.*\)/);
+
+		if (arr) {
+			return arr[0];
+		}
 	};
 
 	const handleOnReadOCR = (data) => {
@@ -32,30 +39,36 @@ const Camera = ({ onRead, product }) => {
 				}
 
 				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
+					product.size = findProductSize(value);
 					productName = value.replace(/ *\([^)]*\) */g, '');
-					const index = productName.indexOf('Aisle');
 
+					// Parsing Aisle code reading prority
+					const index = productName.indexOf('Aisle');
 					if (index > 0) {
 						const str = productName.slice(index);
 						product.aisleName = parseAisle(str);
 						productName = productName.slice(0, index);
 					}
 
+					// clean and remove count
 					product.productName = productName
-						.replace(/^\s+|\s+$/g, '')
+						.replace(/(\r\n|\n|\r)/gm, ' ')
+						.replace(',', '')
+						.trim()
 						.split(' ')
 						.slice(1)
 						.join(' ');
-				}
 
-				if (product.aisleName && product.productName) {
-					products.push(product);
+					if (product.productName && product.aisleName && product.size) {
+						products.push(product);
 
-					product = {
-						...product,
-						aisleName: null,
-						productName: null,
-					};
+						product = {
+							...product,
+							aisleName: null,
+							productName: null,
+							size: null,
+						};
+					}
 				}
 			});
 
@@ -90,15 +103,6 @@ const Camera = ({ onRead, product }) => {
 				onTextRecognized={handleOnReadOCR}
 				// onBarCodeRead={(data) => console.log(data)}
 			>
-				{/* <View
-					style={{
-						flex: 1,
-						width: '100%',
-						borderWidth: 1,
-						borderColor: 'black',
-						opacity: 0.5,
-						backgroundColor: 'black',
-					}}></View> */}
 				<TouchableOpacity onPress={onTextSnapshot} style={styles.camera.capture}>
 					<Image
 						source={require('../../assets/camera/cameraButton.png')}

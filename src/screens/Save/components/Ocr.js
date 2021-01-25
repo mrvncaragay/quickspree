@@ -1,46 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { useTheme, TextInput, Button } from 'react-native-paper';
+import React from 'react';
 import { useStateValue } from '../../../context';
-import { SelectStore, Store, BarCodeScanner, Camera } from '../../../components';
+import { Camera } from '../../../components';
 import { storeData } from '../../../utils/asyncStorage';
-import { useRoute } from '@react-navigation/native';
+import productData from '../../../utils/product';
 
-const initialData = {
-	aisleType: '',
-	aisleName: '',
-	location: {
-		x: 200,
-		y: 150,
-	},
-	productName: '',
-	memo: '',
-};
-
-const Ocr = ({ navigation }) => {
-	const route = useRoute();
-	const [{ store, unsaved }, dispatch] = useStateValue();
-	const [product, setProduct] = useState(initialData);
+const Ocr = () => {
+	const [{ unsaved }, dispatch] = useStateValue();
 
 	const handleSubmit = async (products) => {
-		let unsavedData = [...products, ...unsaved];
+		let unsavedData = [...unsaved, ...products];
 
 		await storeData('unsaved', unsavedData);
 		dispatch({ type: 'setUnsaved', value: unsavedData });
-		setProduct(initialData);
 	};
 
-	return <Camera onRead={handleSubmit} product={initialData} />;
+	return <Camera onRead={handleSubmit} product={productData} />;
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-	},
-	input: {
-		marginTop: 5,
-	},
-});
 
 export default Ocr;

@@ -1,37 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { TextInput, ActivityIndicator, Button, useTheme, Caption, Text, Divider } from 'react-native-paper';
-import { Header, Store, SelectStore } from '../../components';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { TextInput, ActivityIndicator, Button, useTheme, Divider } from 'react-native-paper';
+import { Header, Store, SelectStore, ProductItem } from '../../components';
 import { useStateValue } from '../../context';
 import firebase from '../../firebase';
 
-const Product = ({ product, onPress }) => {
-	const { colors } = useTheme();
-	return (
-		<TouchableOpacity onPress={onPress}>
-			<View
-				style={{
-					flex: 1,
-					backgroundColor: 'white',
-					padding: 10,
-					height: 'auto',
-					borderWidth: 1,
-					borderColor: 'gray',
-				}}
-			>
-				<Caption style={{ lineHeight: 12 }}>
-					Product: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.productName}</Text>
-				</Caption>
-				<Caption style={{ lineHeight: 12 }}>
-					Aisle: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.aisleName}</Text>
-				</Caption>
-				<Caption style={{ lineHeight: 12 }}>
-					Memo: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.memo}</Text>
-				</Caption>
-			</View>
-		</TouchableOpacity>
-	);
-};
 const Locate = ({ navigation }) => {
 	const { colors } = useTheme();
 	const [{ store }] = useStateValue();
@@ -79,8 +52,7 @@ const Locate = ({ navigation }) => {
 							paddingTop: 5,
 							alignItems: 'center',
 							backgroundColor: 'white',
-						}}
-					>
+						}}>
 						<TextInput
 							style={{ flex: 1 }}
 							mode='outlined'
@@ -93,8 +65,7 @@ const Locate = ({ navigation }) => {
 						<Button
 							style={{ height: 43, marginLeft: 5, justifyContent: 'center', top: 3 }}
 							mode='contained'
-							onPress={handleSubmit}
-						>
+							onPress={handleSubmit}>
 							{loading ? <ActivityIndicator animating color='white' /> : 'Find'}
 						</Button>
 					</View>
@@ -103,7 +74,7 @@ const Locate = ({ navigation }) => {
 						style={{ paddingHorizontal: 20, marginTop: 10 }}
 						showsHorizontalScrollIndicator={true}
 						data={products}
-						renderItem={({ item, index }) => <Product product={item} onPress={() => setProduct(item)} />}
+						renderItem={({ item, index }) => <ProductItem product={item} onPress={() => setProduct(item)} />}
 						keyExtractor={(item) => item.productName.toString()}
 						ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
 					/>

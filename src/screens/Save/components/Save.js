@@ -14,7 +14,8 @@ const initialData = {
 		y: 150,
 	},
 	productName: '',
-	memo: '',
+	barcode: '',
+	size: '',
 };
 
 const Save = ({ navigation }) => {
