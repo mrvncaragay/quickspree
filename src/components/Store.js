@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, Platform, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Platform } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { SvgUri, Rect } from 'react-native-svg';
 import SvgPanZoom, { SvgPanZoomElement } from 'react-native-svg-pan-zoom';
@@ -43,7 +43,7 @@ const Store = ({ store, product, handleLocation, isForm }) => {
 							: `https://quickspree.s3-us-west-1.amazonaws.com/svg/default.svg`
 					}
 				/>
-				{route.name === 'EditUnsaved' && (
+				{(route.name === 'EditUnsaved' || route.name === 'Locate') && (
 					<>
 						{isForm && (
 							<SvgPanZoomElement onClick={handleMarker}>

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useStateValue } from '../../../context';
 import { Camera } from '../../../components';
 import { storeData } from '../../../utils/asyncStorage';
+import checkSimilarity from '../../../utils/stringSimilarity';
 import productData from '../../../utils/product';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 
@@ -12,7 +13,7 @@ const Ocr = () => {
 
 	const handleSubmit = async (products) => {
 		setIsSaving(true);
-		const unsavedData = [...unsaved, ...products];
+		const unsavedData = checkSimilarity(unsaved, products);
 		await storeData('unsaved', unsavedData);
 		dispatch({ type: 'setUnsaved', value: unsavedData });
 		setIsSaving(false);

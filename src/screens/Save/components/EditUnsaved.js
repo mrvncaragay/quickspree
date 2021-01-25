@@ -4,8 +4,9 @@ import { TextInput, Button, IconButton, useTheme } from 'react-native-paper';
 import { useStateValue } from '../../../context';
 import { Store, Camera } from '../../../components';
 import { storeData } from '../../../utils/asyncStorage';
+import firebase from '../../../firebase';
 
-const EditUnsaved = ({ route }) => {
+const EditUnsaved = ({ navigation, route }) => {
 	const { colors } = useTheme();
 	const [{ store, unsaved }, dispatch] = useStateValue();
 	const [product, setProduct] = useState(route.params.product);
@@ -16,17 +17,22 @@ const EditUnsaved = ({ route }) => {
 	});
 
 	const handleSubmit = async () => {
-		let unsavedData;
+		const { aisleType, aisleName, location, productName, size, barcode } = product;
+		if (!aisleType || !aisleName || !location || !productName || !size || !barcode) return;
 
-		if (route.params?.product) {
-			unsaved[route.params.product.index] = product;
-			unsavedData = [...unsaved];
-		} else {
-			unsavedData = [product, ...unsaved];
-		}
+		const productRef = firebase.database().ref(`products/${product.productName.toLowerCase()}`);
 
-		await storeData('unsaved', unsavedData);
-		dispatch({ type: 'setUnsaved', value: unsavedData });
+		productRef.child(`${store.name}-${store.storeNumber}`).set(product, async (error) => {
+			if (error) {
+				console.log(error);
+			} else {
+				let unsavedData = unsaved.filter((_, index) => index !== route.params.index);
+
+				await storeData('unsaved', unsavedData);
+				dispatch({ type: 'setUnsaved', value: unsavedData });
+				navigation.goBack();
+			}
+		});
 	};
 
 	const handleBarcodeScan = (info) => {
@@ -140,7 +146,7 @@ const EditUnsaved = ({ route }) => {
 								style={styles.input}
 								mode='outlined'
 								label='Memo (optional)'
-								multiline
+								dense
 								numberOfLines={3}
 								value={product.memo}
 								onChangeText={(memo) => setProduct({ ...product, memo })}

@@ -4,7 +4,7 @@ import { useTheme, Caption, Text, IconButton } from 'react-native-paper';
 import { useStateValue } from '../context';
 import { storeData } from '../utils/asyncStorage';
 
-const ProductItem = ({ product, onPress }) => {
+const ProductItem = ({ product, onPress, freeze }) => {
 	const { colors } = useTheme();
 	const [{ unsaved }, dispatch] = useStateValue();
 
@@ -14,7 +14,7 @@ const ProductItem = ({ product, onPress }) => {
 		});
 
 		dispatch({ type: 'setUnsaved', value: unusedArr });
-		// await storeData('unsaved', unusedArr);
+		await storeData('unsaved', unusedArr);
 	};
 
 	return (
@@ -42,13 +42,15 @@ const ProductItem = ({ product, onPress }) => {
 					Memo: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.memo}</Text>
 				</Caption>
 
-				<IconButton
-					style={{ alignSelf: 'flex-end' }}
-					icon='trash-can-outline'
-					color='red'
-					size={20}
-					onPress={handleRemoveUnsaved}
-				/>
+				{!freeze && (
+					<IconButton
+						style={{ alignSelf: 'flex-end' }}
+						icon='trash-can-outline'
+						color='red'
+						size={20}
+						onPress={handleRemoveUnsaved}
+					/>
+				)}
 			</View>
 		</TouchableOpacity>
 	);

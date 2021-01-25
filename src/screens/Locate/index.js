@@ -74,7 +74,7 @@ const Locate = ({ navigation }) => {
 						style={{ paddingHorizontal: 20, marginTop: 10 }}
 						showsHorizontalScrollIndicator={true}
 						data={products}
-						renderItem={({ item, index }) => <ProductItem product={item} onPress={() => setProduct(item)} />}
+						renderItem={({ item, index }) => <ProductItem product={item} onPress={() => setProduct(item)} freeze />}
 						keyExtractor={(item) => item.productName.toString()}
 						ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
 					/>
