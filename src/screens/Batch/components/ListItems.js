@@ -16,8 +16,7 @@ const ListItems = ({}) => {
 					alignItems: 'center',
 					backgroundColor: '#fff',
 					paddingHorizontal: 20,
-				}}
-			>
+				}}>
 				<TextInput
 					style={{ marginVertical: 5, flex: 1 }}
 					mode='outlined'

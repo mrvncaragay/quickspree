@@ -14,7 +14,7 @@ const ProductItem = ({ product, onPress }) => {
 		});
 
 		dispatch({ type: 'setUnsaved', value: unusedArr });
-		await storeData('unsaved', unusedArr);
+		// await storeData('unsaved', unusedArr);
 	};
 
 	return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
 
 export const Constants = {
 	...RNCamera.Constants,
@@ -8,6 +9,7 @@ export const Constants = {
 
 const Camera = ({ onRead, product }) => {
 	const [readOcr, setReadOcr] = useState(false);
+	const { colors } = useTheme();
 
 	const onTextSnapshot = () => {
 		setReadOcr(true);
@@ -27,31 +29,33 @@ const Camera = ({ onRead, product }) => {
 	};
 
 	const handleOnReadOCR = (data) => {
-		if (readOcr && data.textBlocks) {
-			const products = [];
+		const products = [];
+		let aisleName = null;
+		let productName = null;
+		let size = null;
 
+		if (readOcr && data.textBlocks) {
 			data.textBlocks.map((text) => {
-				let productName = null;
 				const { value } = text;
 
 				if (value.startsWith('Aisle')) {
-					product.aisleName = parseAisle(value);
+					aisleName = parseAisle(value);
 				}
 
 				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
-					product.size = findProductSize(value);
+					size = findProductSize(value);
 					productName = value.replace(/ *\([^)]*\) */g, '');
 
 					// Parsing Aisle code reading prority
 					const index = productName.indexOf('Aisle');
 					if (index > 0) {
 						const str = productName.slice(index);
-						product.aisleName = parseAisle(str);
+						aisleName = parseAisle(str);
 						productName = productName.slice(0, index);
 					}
 
 					// clean and remove count
-					product.productName = productName
+					productName = productName
 						.replace(/(\r\n|\n|\r)/gm, ' ')
 						.replace(',', '')
 						.trim()
@@ -59,22 +63,13 @@ const Camera = ({ onRead, product }) => {
 						.slice(1)
 						.join(' ');
 
-					if (product.productName && product.aisleName && product.size) {
-						products.push(product);
-
-						product = {
-							...product,
-							aisleName: null,
-							productName: null,
-							size: null,
-						};
+					if (productName && aisleName && size) {
+						products.push({ ...product, size, aisleName, productName });
 					}
 				}
 			});
-
-			onRead(products);
 		}
-
+		onRead(products);
 		setReadOcr(false);
 	};
 
@@ -100,16 +95,21 @@ const Camera = ({ onRead, product }) => {
 				//   buttonPositive: 'Ok',
 				//   buttonNegative: 'Cancel',
 				// }}
-				onTextRecognized={handleOnReadOCR}
+				onTextRecognized={readOcr ? handleOnReadOCR : null}
 				// onBarCodeRead={(data) => console.log(data)}
 			>
-				<TouchableOpacity onPress={onTextSnapshot} style={styles.camera.capture}>
-					<Image
-						source={require('../../assets/camera/cameraButton.png')}
-						style={{ width: 50, height: 50 }}
-						resizeMode={'contain'}
-					/>
-				</TouchableOpacity>
+				{({ camera, status, recordAudioPermissionStatus }) => {
+					if (status !== 'READY') return <ActivityIndicator size='large' color={colors.primary} />;
+					return (
+						<TouchableOpacity onPress={onTextSnapshot} style={styles.camera.capture}>
+							<Image
+								source={require('../../assets/camera/cameraButton.png')}
+								style={{ width: 50, height: 50 }}
+								resizeMode={'contain'}
+							/>
+						</TouchableOpacity>
+					);
+				}}
 			</RNCamera>
 		</View>
 	);
@@ -125,6 +125,7 @@ const styles = {
 			top: 0,
 			bottom: 0,
 			backgroundColor: 'black',
+			justifyContent: 'center',
 		},
 		preview: {
 			flex: 1,
