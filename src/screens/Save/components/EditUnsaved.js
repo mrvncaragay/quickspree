@@ -52,6 +52,20 @@ const EditUnsaved = ({ navigation, route }) => {
 		});
 	};
 
+	const handleUpdate = async () => {
+		let updatedUnsaved = unsaved.map((prod, index) => {
+			if (index === route.params.index) {
+				return product;
+			} else {
+				return prod;
+			}
+		});
+
+		await storeData('unsaved', updatedUnsaved);
+		dispatch({ type: 'setUnsaved', value: updatedUnsaved });
+		navigation.goBack();
+	};
+
 	return (
 		<View style={[styles.container, !store && { justifyContent: 'center', alignItems: 'center' }]}>
 			{!scan ? (
@@ -95,7 +109,6 @@ const EditUnsaved = ({ navigation, route }) => {
 									</Button>
 								))}
 							</View>
-
 							<TextInput
 								multiline
 								style={styles.input}
@@ -105,7 +118,6 @@ const EditUnsaved = ({ navigation, route }) => {
 								value={product.productName}
 								onChangeText={(productName) => setProduct({ ...product, productName })}
 							/>
-
 							<TextInput
 								style={styles.input}
 								mode='outlined'
@@ -114,7 +126,6 @@ const EditUnsaved = ({ navigation, route }) => {
 								value={product?.aisleName || ''}
 								onChangeText={(aisleName) => setProduct({ ...product, aisleName })}
 							/>
-
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 								<TextInput
 									style={[styles.input, { width: '85%' }]}
@@ -133,7 +144,6 @@ const EditUnsaved = ({ navigation, route }) => {
 									onPress={() => setScan(true)}
 								/>
 							</View>
-
 							<TextInput
 								style={styles.input}
 								mode='outlined'
@@ -152,6 +162,9 @@ const EditUnsaved = ({ navigation, route }) => {
 								onChangeText={(memo) => setProduct({ ...product, memo })}
 							/>
 
+							<Button style={{ marginTop: 15, padding: 5 }} mode='contained' onPress={handleUpdate}>
+								Update
+							</Button>
 							<Button
 								disabled={product.aisleName && product.aisleType ? false : true}
 								style={{ marginTop: 15, padding: 5 }}

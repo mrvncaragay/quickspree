@@ -63,7 +63,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 						.slice(1)
 						.join(' ');
 
-					if (productName && aisleName && size) {
+					if (productName && size) {
 						products.push({ ...product, size, aisleName, productName });
 					}
 				}
