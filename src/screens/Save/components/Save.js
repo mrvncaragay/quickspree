@@ -14,7 +14,7 @@ const initialData = {
 		y: 150,
 	},
 	productName: '',
-	barcode: '',
+	upc: '',
 	size: '',
 };
 
@@ -47,7 +47,7 @@ const Save = ({ navigation }) => {
 	const handleBarcodeScan = (info) => {
 		setProduct({
 			...product,
-			barcode: info.data,
+			upc: info.data,
 		});
 		setScan(false);
 	};
@@ -123,14 +123,14 @@ const Save = ({ navigation }) => {
 										style={[styles.input, { width: '85%' }]}
 										mode='outlined'
 										dense
-										label='Barcode...'
+										label='upc...'
 										disabled
-										value={product.barcode}
+										value={product.upc}
 									/>
 
 									<IconButton
 										style={{ position: 'relative', top: 5 }}
-										icon='barcode-scan'
+										icon='upc-scan'
 										size={30}
 										color={colors.primary}
 										onPress={() => setScan(true)}

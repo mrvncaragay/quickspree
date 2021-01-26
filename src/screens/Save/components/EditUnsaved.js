@@ -18,8 +18,8 @@ const EditUnsaved = ({ navigation, route }) => {
 	});
 
 	const handleSubmit = async () => {
-		const { aisleType, aisleName, location, productName, size, barcode } = product;
-		if (!aisleType || !aisleName || !location || !productName || !size || !barcode) return;
+		const { aisleType, aisleName, location, productName, size, upc } = product;
+		if (!aisleType || !aisleName || !location || !productName || !size || !upc) return;
 
 		const productRef = firebase.database().ref(`products/${product.productName.toLowerCase()}`);
 
@@ -40,7 +40,7 @@ const EditUnsaved = ({ navigation, route }) => {
 		if (info) {
 			setProduct({
 				...product,
-				barcode: info.data.slice(1),
+				upc: info.data.slice(1),
 			});
 			setScan(!scan);
 		}
@@ -132,9 +132,9 @@ const EditUnsaved = ({ navigation, route }) => {
 						style={[styles.input, { width: '85%' }]}
 						mode='outlined'
 						dense
-						label='Barcode...'
+						label='upc...'
 						disabled
-						value={product.barcode}
+						value={product.upc}
 					/>
 
 					<IconButton

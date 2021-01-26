@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { Button, Divider } from 'react-native-paper';
 import { useStateValue } from '../../../context';
 import { removeData } from '../../../utils/asyncStorage';
-import THEME from '../../../theme';
 import { ProductItem } from '../../../components';
 
 const Unsaved = ({ navigation }) => {
@@ -37,16 +36,5 @@ const Unsaved = ({ navigation }) => {
 		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		padding: 10,
-		paddingBottom: 0,
-		height: 'auto',
-		borderWidth: 1,
-		borderColor: THEME.colors.primary,
-		justifyContent: 'center',
-	},
-});
 
 export default Unsaved;

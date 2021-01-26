@@ -6,7 +6,7 @@ const productData = {
 		x: 200,
 		y: 150,
 	},
-	barcode: '',
+	upc: '',
 	size: '',
 	memo: '',
 };
