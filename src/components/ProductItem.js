@@ -32,6 +32,12 @@ const ProductItem = ({ product, onPress, freeze }) => {
 				<Caption style={{ lineHeight: 12 }}>
 					Product: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.productName}</Text>
 				</Caption>
+				<Caption style={{ lineHeight: 12 }}>
+					Aisle: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.aisleName}</Text>
+				</Caption>
+				<Caption style={{ lineHeight: 12 }}>
+					Size: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.size}</Text>
+				</Caption>
 
 				{!freeze && (
 					<IconButton
