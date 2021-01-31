@@ -43,7 +43,7 @@ const ProductItem = ({ product }) => {
 					<Text style={{ color: colors.backdrop, fontSize: 14 }}>{!product?.size ? '' : product.size}</Text>
 				</CustomText>
 
-				<CustomText labelStyle={{ marginTop: 10 }} label={`Aisle - ${product?.aisleName || ''}`} />
+				<CustomText labelStyle={{ marginTop: 10 }} label={`Aisle - ${product?.aisleCode || ''}`} />
 			</View>
 			<Button
 				style={{ height: 30, alignSelf: 'flex-end' }}

@@ -30,7 +30,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 
 	const handleOnReadOCR = (data) => {
 		const products = [];
-		let aisleName = null;
+		let aisleCode = null;
 		let productName = null;
 		let size = null;
 
@@ -39,7 +39,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 				const { value } = text;
 
 				if (value.startsWith('Aisle')) {
-					aisleName = parseAisle(value);
+					aisleCode = parseAisle(value);
 				}
 
 				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
@@ -50,7 +50,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 					const index = productName.indexOf('Aisle');
 					if (index > 0) {
 						const str = productName.slice(index);
-						aisleName = parseAisle(str);
+						aisleCode = parseAisle(str);
 						productName = productName.slice(0, index);
 					}
 
@@ -64,7 +64,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 						.join(' ');
 
 					if (productName && size) {
-						products.push({ ...product, size, aisleName, productName });
+						products.push({ ...product, size, aisleCode, productName });
 					}
 				}
 			});

@@ -23,7 +23,7 @@ const savingUnsavePromise = (unsaved) => {
 };
 
 const Unsaved = ({ navigation }) => {
-	const [{ store, unsaved }, dispatch] = useStateValue();
+	const [{ unsaved }, dispatch] = useStateValue();
 	const colors = useTheme();
 
 	const handleClearAllUnsaved = () => {
