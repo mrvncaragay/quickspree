@@ -6,8 +6,8 @@ import { removeData } from '../../../utils/asyncStorage';
 import { ProductItem } from '../../../components';
 import firebase from '../../../firebase';
 
-const savingUnsavePromise = (unsaved, store) => {
-	const storeRef = firebase.database().ref(`batch/${store.name}-${store.storeNumber}`);
+const savingUnsavePromise = (unsaved) => {
+	const storeRef = firebase.database().ref(`batch`);
 
 	return new Promise((resolve, reject) => {
 		unsaved.forEach((item) => {
@@ -32,17 +32,17 @@ const Unsaved = ({ navigation }) => {
 	};
 
 	const handleSaveItemsToDB = async () => {
-		await savingUnsavePromise(unsaved, store);
+		await savingUnsavePromise(unsaved);
 
 		await removeData('unsaved');
 		dispatch({ type: 'setUnsaved', value: [] });
 	};
 
+	console.log(unsaved);
 	return (
-		<View style={{ flex: 1, paddingHorizontal: 20, alignItems: 'flex-end' }}>
+		<View style={{ flex: 1, paddingHorizontal: 20 }}>
 			<FlatList
 				style={{ marginTop: 10 }}
-				showsHorizontalScrollIndicator={true}
 				data={unsaved}
 				renderItem={({ item, index }) => (
 					<ProductItem product={item} onPress={() => navigation.navigate('EditUnsaved', { product: item, index })} />
@@ -51,7 +51,7 @@ const Unsaved = ({ navigation }) => {
 				ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
 			/>
 			{unsaved.length > 0 && (
-				<View style={{ flexDirection: 'row' }}>
+				<View style={{ flexDirection: 'row', justifyContent: 'center' }}>
 					<Button
 						style={{ alignSelf: 'flex-end', marginVertical: 10, backgroundColor: 'firebrick' }}
 						mode='contained'
@@ -63,7 +63,7 @@ const Unsaved = ({ navigation }) => {
 						style={{ alignSelf: 'flex-end', marginVertical: 10, marginLeft: 10 }}
 						mode='contained'
 						onPress={handleSaveItemsToDB}>
-						Save
+						SEND
 					</Button>
 				</View>
 			)}

@@ -4,9 +4,9 @@ import { useTheme, ActivityIndicator } from 'react-native-paper';
 import { useStateValue } from '../../context';
 import { Header as HeaderComponent, SelectStore } from '../../components';
 import { readData } from '../../utils/asyncStorage';
-import TopTabSaveNavigator from '../../navigations/TopTabSaveNavigator';
+import Ocr from './components/Ocr';
 
-const Save = ({ navigation }) => {
+const OCR = ({ navigation }) => {
 	const { colors } = useTheme();
 	const [{ store, isLoading }, dispatch] = useStateValue();
 
@@ -35,7 +35,7 @@ const Save = ({ navigation }) => {
 			) : store ? (
 				<>
 					<HeaderComponent store={store} colors={colors} navigation={navigation} />
-					<TopTabSaveNavigator />
+					<Ocr />
 				</>
 			) : (
 				<SelectStore colors={colors} navigation={navigation} />
@@ -54,4 +54,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Save;
+export default OCR;

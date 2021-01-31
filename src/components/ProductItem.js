@@ -1,55 +1,59 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { useTheme, Caption, Text, IconButton } from 'react-native-paper';
+import { View } from 'react-native';
+import { useTheme, Text, Button } from 'react-native-paper';
 import { useStateValue } from '../context';
 import { storeData } from '../utils/asyncStorage';
 
-const ProductItem = ({ product, onPress, freeze }) => {
+const ProductItem = ({ product }) => {
 	const { colors } = useTheme();
+
 	const [{ unsaved }, dispatch] = useStateValue();
 
-	const handleRemoveUnsaved = async () => {
-		const unusedArr = unsaved.filter((p) => {
-			return p.productName !== product.productName;
-		});
+	const CustomText = ({ label, children, containerStyle, labelStyle }) => {
+		return (
+			<View style={[{ flexDirection: 'row', flexWrap: 'wrap' }, containerStyle]}>
+				<Text style={[{ color: colors.backdrop }, labelStyle]}>{label}</Text>
+				<Text style={{ flex: 1, color: colors.dark600, fontSize: 16 }}>{children}</Text>
+			</View>
+		);
+	};
 
-		dispatch({ type: 'setUnsaved', value: unusedArr });
-		await storeData('unsaved', unusedArr);
+	const handleDelete = async () => {
+		const newUnsaved = unsaved.filter((p) => p.productName !== product.productName);
+
+		await storeData('unsaved', newUnsaved);
+		dispatch({ type: 'setUnsaved', value: newUnsaved });
 	};
 
 	return (
-		<TouchableOpacity onPress={onPress}>
-			<View
-				style={{
-					flex: 1,
-					backgroundColor: 'white',
-					padding: 10,
-					paddingBottom: 0,
-					height: 'auto',
-					borderWidth: 1,
-					borderColor: 'gray',
-				}}>
-				<Caption style={{ lineHeight: 12 }}>
-					Product: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.productName}</Text>
-				</Caption>
-				<Caption style={{ lineHeight: 12 }}>
-					Aisle: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.aisleName}</Text>
-				</Caption>
-				<Caption style={{ lineHeight: 12 }}>
-					Size: <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{product?.size}</Text>
-				</Caption>
+		<View
+			style={{
+				flexDirection: 'row',
+				flex: 1,
+				backgroundColor: 'white',
+				padding: 20,
+				height: 'auto',
+				borderTopWidth: 1,
+				borderColor: 'lightgray',
+			}}>
+			<View style={{ flex: 1 }}>
+				<CustomText containerStyle={{ flex: 1 }} title>
+					{product?.productName}
+					{'\n'}
+					<Text style={{ color: colors.backdrop, fontSize: 14 }}>{!product?.size ? '' : product.size}</Text>
+				</CustomText>
 
-				{!freeze && (
-					<IconButton
-						style={{ alignSelf: 'flex-end' }}
-						icon='trash-can-outline'
-						color='red'
-						size={20}
-						onPress={handleRemoveUnsaved}
-					/>
-				)}
+				<CustomText labelStyle={{ marginTop: 10 }} label={`Aisle - ${product?.aisleName || ''}`} />
 			</View>
-		</TouchableOpacity>
+			<Button
+				style={{ height: 30, alignSelf: 'flex-end' }}
+				labelStyle={{ fontSize: 8 }}
+				mode='contained'
+				compact
+				onPress={handleDelete}>
+				delete
+			</Button>
+		</View>
 	);
 };
 

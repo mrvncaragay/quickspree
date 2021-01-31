@@ -1,42 +1,36 @@
 import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Save, Locate, Batch } from '../screens';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import UnsavedList from '../screens/Ocr/components/UnsavedList';
+import { OCR } from '../screens';
+import { useStateValue } from '../context';
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 const BottomTabNavigator = () => {
+	const [{ unsaved }] = useStateValue();
+
 	return (
 		<BottomTab.Navigator
-			shifting={true}
 			activeColor='#FFFFFF'
 			labelStyle={{ fontSize: 12 }}
 			barStyle={{ backgroundColor: '#165E7C', height: 80, paddingTop: 15, paddingBottom: 2 }}>
-			{/* <BottomTab.Screen
-				name='Batch'
-				component={Batch}
-				style={{ padding: 12 }}
-				options={
-					{
-						// tabBarIcon: ({ color }) => <Icon name='list' size={28} color={color} />,
-					}
-				}
-			/> */}
-
 			<BottomTab.Screen
-				name='Save'
-				component={Save}
+				name='OCR'
+				component={OCR}
 				style={{ padding: 12 }}
 				options={{
-					tabBarIcon: ({ color }) => <Icon name='add' size={22} color={color} />,
+					tabBarIcon: ({ color }) => <MaterialCommunityIcons name='camera-iris' size={22} color={color} />,
 				}}
 			/>
 
 			<BottomTab.Screen
-				name='Locate'
-				component={Locate}
+				name='SEND'
+				component={UnsavedList}
 				options={{
-					tabBarIcon: ({ color }) => <Icon name='search' size={22} color={color} />,
+					title: `${unsaved.length || ''} UNSEND`,
+					tabBarIcon: ({ color }) => <FontAwesome5 name='telegram-plane' size={22} color={color} />,
 				}}
 			/>
 		</BottomTab.Navigator>

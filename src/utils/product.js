@@ -1,14 +1,13 @@
-const productData = {
+export const productData = {
 	productName: '',
-	aisleType: '',
-	aisleName: '',
+	aisleType: 'aisle',
+	aisleCode: '',
 	location: {
-		x: 200,
-		y: 150,
+		x: 0,
+		y: 0,
 	},
+	image: {},
 	upc: '',
 	size: '',
 	memo: '',
 };
-
-export default productData;

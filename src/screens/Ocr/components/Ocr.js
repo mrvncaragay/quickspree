@@ -1,29 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStateValue } from '../../../context';
 import { Camera } from '../../../components';
 import { storeData } from '../../../utils/asyncStorage';
 import checkSimilarity from '../../../utils/stringSimilarity';
-import productData from '../../../utils/product';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
+import { productData } from '../../../utils/product';
 
 const Ocr = () => {
 	const [{ unsaved }, dispatch] = useStateValue();
-	const [isSaving, setIsSaving] = useState(false);
-	const colors = useTheme();
-
 	const handleSubmit = async (products) => {
-		setIsSaving(true);
 		const unsavedData = checkSimilarity(unsaved, products);
 		await storeData('unsaved', unsavedData);
 		dispatch({ type: 'setUnsaved', value: unsavedData });
-		setIsSaving(false);
 	};
 
-	return isSaving ? (
-		<ActivityIndicator size='large' color={colors.primary} />
-	) : (
-		<Camera onRead={handleSubmit} product={productData} />
-	);
+	return <Camera onRead={handleSubmit} product={productData} />;
 };
 
 export default Ocr;

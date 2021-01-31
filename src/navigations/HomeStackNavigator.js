@@ -2,7 +2,7 @@ import React from 'react';
 import { AddStore, SearchStore } from '../screens';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomStackNavigator from './BottomTabNavigator';
-import EditUnsaved from '../screens/Save/components/EditUnsaved';
+import EditUnsaved from '../screens/Ocr/components/EditUnsaved';
 
 const Stack = createStackNavigator();
 
