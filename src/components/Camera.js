@@ -15,10 +15,10 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 		setReadOcr(true);
 	};
 
-	const parseAisle = (str) => {
-		const satr = str.replace(/-/g, '');
-		return satr.split(' ')[1];
-	};
+	// const parseAisle = (str) => {
+	// 	const satr = str.replace(/-/g, '');
+	// 	return satr.split(' ')[1];
+	// };
 
 	const findProductSize = (str) => {
 		const arr = str.match(/\(.*\)/);
@@ -33,24 +33,29 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 		let aisleCode = null;
 		let productName = null;
 		let size = null;
+		let quantity = null;
 
 		if (readOcr && data.textBlocks) {
 			data.textBlocks.map((text) => {
 				const { value } = text;
 
 				if (value.startsWith('Aisle')) {
-					aisleCode = parseAisle(value);
+					aisleCode = value; //parseAisle(value);
 				}
 
 				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
 					size = findProductSize(value);
+					if (value) {
+						quantity = value.match(/([1-9])\w/)[0];
+					}
+
 					productName = value.replace(/ *\([^)]*\) */g, '');
 
 					// Parsing Aisle code reading prority
 					const index = productName.indexOf('Aisle');
 					if (index > 0) {
 						const str = productName.slice(index);
-						aisleCode = parseAisle(str);
+						aisleCode = str; // parseAisle(str);
 						productName = productName.slice(0, index);
 					}
 
@@ -64,7 +69,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 						.join(' ');
 
 					if (productName && size) {
-						products.push({ ...product, size, aisleCode, productName });
+						products.push({ ...product, size, quantity, aisleCode, productName });
 					}
 				}
 			});

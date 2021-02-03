@@ -6,18 +6,14 @@ import { removeData } from '../../../utils/asyncStorage';
 import { ProductItem } from '../../../components';
 import firebase from '../../../firebase';
 
-const savingUnsavePromise = (unsaved) => {
-	const storeRef = firebase.database().ref(`batch`);
+// Find item based on key
+const findPorductToDB = (unsaved) => {
+	const unsavedExample = [{ ...unsaved[0], productName: 'dove dark chocolate' }];
 
-	return new Promise((resolve, reject) => {
-		unsaved.forEach((item) => {
-			storeRef.push().set(item, async (error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			});
+	const productRef = firebase.database().ref('products/');
+	return unsavedExample.forEach((unsave) => {
+		productRef.child(unsave.productName).once('value', (snapshot) => {
+			console.log(snapshot.val());
 		});
 	});
 };
@@ -32,13 +28,19 @@ const Unsaved = ({ navigation }) => {
 	};
 
 	const handleSaveItemsToDB = async () => {
-		await savingUnsavePromise(unsaved);
-
-		await removeData('unsaved');
-		dispatch({ type: 'setUnsaved', value: [] });
+		const batchRef = firebase.database().ref(`batch`);
+		unsaved.forEach(async (item) => {
+			batchRef.push().set(item, (error) => {
+				if (error) {
+					console.log(error);
+				} else {
+					removeData('unsaved');
+					dispatch({ type: 'setUnsaved', value: [] });
+				}
+			});
+		});
 	};
 
-	console.log(unsaved);
 	return (
 		<View style={{ flex: 1, paddingHorizontal: 20 }}>
 			<FlatList
