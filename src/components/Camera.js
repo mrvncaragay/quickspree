@@ -45,8 +45,9 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 
 				if (value.length > 15 && text.bounds.origin.x >= 140 && text.bounds.origin.y < 450) {
 					size = findProductSize(value);
+
 					if (value) {
-						quantity = value.match(/([1-9])\w/)[0];
+						quantity = value.split(' ')[0];
 					}
 
 					productName = value.replace(/ *\([^)]*\) */g, '');
