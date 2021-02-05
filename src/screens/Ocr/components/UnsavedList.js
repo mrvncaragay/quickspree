@@ -6,7 +6,7 @@ import { removeData, storeData } from '../../../utils/asyncStorage';
 import UnsavedItem from './UnsavedItem';
 import { pageCrawler } from '../../../../config';
 import axios from 'axios';
-import { getASingleProductFromDB } from '../../../firebase';
+import firebase, { getASingleProductFromDB, saveProductToDB } from '../../../firebase';
 
 const UnsavedList = ({ navigation }) => {
 	const [{ unsaved, store }, dispatch] = useStateValue();
@@ -18,7 +18,7 @@ const UnsavedList = ({ navigation }) => {
 		removeData('unsaved');
 	};
 
-	const handleSaveItemsToDB = async () => {
+	const handleFetchImageItems = async () => {
 		setUploading(true);
 		const copyUnsaved = [...unsaved];
 		const newUnsaved = [];
@@ -47,6 +47,20 @@ const UnsavedList = ({ navigation }) => {
 		setUploading(false);
 	};
 
+	const handleSaveItemsToDB = async () => {
+		const batchRef = firebase.database().ref('batch/');
+		unsaved.forEach(async (item) => {
+			batchRef.push().set(item, (error) => {
+				if (error) {
+					console.log(error);
+				} else {
+					removeData('unsaved');
+					dispatch({ type: 'setUnsaved', value: [] });
+				}
+			});
+		});
+	};
+
 	return (
 		<View style={{ flex: 1, paddingHorizontal: 20, justifyContent: 'center' }}>
 			{uploading ? (
@@ -73,6 +87,14 @@ const UnsavedList = ({ navigation }) => {
 								onPress={handleClearAllUnsaved}>
 								Clear
 							</Button>
+
+							<Button
+								style={{ alignSelf: 'flex-end', marginVertical: 10, marginLeft: 10 }}
+								mode='contained'
+								onPress={handleFetchImageItems}>
+								Fetch Images
+							</Button>
+
 							<Button
 								color={colors.primary}
 								style={{ alignSelf: 'flex-end', marginVertical: 10, marginLeft: 10 }}
