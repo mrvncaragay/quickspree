@@ -10,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { storeData } from '../../../utils/asyncStorage';
 import axios from 'axios';
 
-const BatchItem = ({ product, onPress }) => {
+const EditUnsaved = ({ product, onPress }) => {
 	const [{ unsaved, store }, dispatch] = useStateValue();
 	const navigation = useNavigation();
 	const { colors } = useTheme();
@@ -41,7 +41,6 @@ const BatchItem = ({ product, onPress }) => {
 		dispatch({ type: 'setUnsaved', value: newUnsaved });
 	};
 
-	console.log(product);
 	return (
 		<View
 			style={{
@@ -114,4 +113,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default BatchItem;
+export default EditUnsaved;

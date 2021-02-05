@@ -8,8 +8,7 @@ const Snackbar = ({ controller, setVisible }) => {
 			style={{ backgroundColor: 'green' }}
 			duration={2000}
 			visible={controller.status}
-			onDismiss={setVisible}
-		>
+			onDismiss={setVisible}>
 			<Text style={{ color: 'white', textAlign: 'center' }}>{controller.message}</Text>
 		</MessageAlert>
 	);

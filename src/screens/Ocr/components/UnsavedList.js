@@ -3,22 +3,10 @@ import { View, FlatList } from 'react-native';
 import { Button, Divider, useTheme, ActivityIndicator } from 'react-native-paper';
 import { useStateValue } from '../../../context';
 import { removeData, storeData } from '../../../utils/asyncStorage';
-import BatchItem from './BatchItem';
+import EditUnsaved from './EditUnsaved';
 import { pageCrawler } from '../../../../config';
 import axios from 'axios';
-import firebase, { getASingleProductFromDB } from '../../../firebase';
-
-// Find item based on key
-const findPorductToDB = (unsaved) => {
-	const unsavedExample = [{ ...unsaved[0], productName: 'dove dark chocolate' }];
-
-	const productRef = firebase.database().ref('products/');
-	return unsavedExample.forEach((unsave) => {
-		productRef.child(unsave.productName).once('value', (snapshot) => {
-			console.log(snapshot.val());
-		});
-	});
-};
+import { getASingleProductFromDB } from '../../../firebase';
 
 const Unsaved = ({ navigation }) => {
 	const [{ unsaved, store }, dispatch] = useStateValue();
@@ -50,23 +38,12 @@ const Unsaved = ({ navigation }) => {
 		for (let i = 0; i < noUnsavedImage.length; i++) {
 			const response = await axios.get(pageCrawler(store.name, noUnsavedImage[i].productName));
 			if (response.data?.urls) {
-				newUnsaved.push({ ...noUnsavedImage[i], images: response.data.urls });
+				newUnsaved.push({ ...noUnsavedImage[i], images: response.data.urls.map((url) => url.replace('197x', '697x')) });
 			}
 		}
 
 		storeData('unsaved', newUnsaved);
 		dispatch({ type: 'setUnsaved', value: newUnsaved });
-		// const batchRef = firebase.database().ref(`batch`);
-		// unsaved.forEach(async (item) => {
-		// 	batchRef.push().set(item, (error) => {
-		// 		if (error) {
-		// 			console.log(error);
-		// 		} else {
-		// 			removeData('unsaved');
-		// 			dispatch({ type: 'setUnsaved', value: [] });
-		// 		}
-		// 	});
-		// });
 		setUploading(false);
 	};
 
@@ -80,7 +57,10 @@ const Unsaved = ({ navigation }) => {
 						style={{ marginTop: 10 }}
 						data={unsaved}
 						renderItem={({ item, index }) => (
-							<BatchItem product={item} onPress={() => navigation.navigate('EditUnsaved', { product: item, index })} />
+							<EditUnsaved
+								product={item}
+								onPress={() => navigation.navigate('EditUnsaved', { product: item, index })}
+							/>
 						)}
 						keyExtractor={(_, index) => index.toString()}
 						ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}

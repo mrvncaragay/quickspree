@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, Image, StyleSheet, View, Platform, Modal, TouchableOpacity } from 'react-native';
-import { Divider, useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Divider, useTheme, IconButton } from 'react-native-paper';
 import { useStateValue } from '../../context';
 import { storeData } from '../../utils/asyncStorage';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -44,12 +43,11 @@ const ImageContainer = ({ navigation, url, productName }) => {
 				/>
 			</TouchableOpacity>
 
-			<MaterialCommunityIcons
-				name='arrow-right-bold'
+			<IconButton
+				icon='chevron-right'
 				color={colors.primary}
-				size={22}
-				style={{ width: 35 }}
-				onPress={updateUnsavedImage}
+				size={24}
+				onPress={() => navigation.navigate('SearchStore')}
 			/>
 			<Modal visible={viewImage} transparent={true} onRequestClose={() => setViewImage(false)}>
 				<ImageViewer

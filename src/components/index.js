@@ -1,7 +1,4 @@
 export { default as Header } from './Header';
 export { default as SelectStore } from './SelectStore';
-export { default as Store } from './Store';
-export { default as BarCodeScanner } from './BarcodeScanner';
 export { default as Camera } from './Camera';
-export { default as ProductItem } from './ProductItem';
 export { default as Snackbar } from './SnackBar';
