@@ -48,6 +48,7 @@ const UnsavedList = ({ navigation }) => {
 	};
 
 	const handleSaveItemsToDB = async () => {
+		setUploading(true);
 		const batchRef = firebase.database().ref('batch/');
 		unsaved.forEach(async (item) => {
 			batchRef.push().set(item, (error) => {
@@ -59,6 +60,7 @@ const UnsavedList = ({ navigation }) => {
 				}
 			});
 		});
+		setUploading(false);
 	};
 
 	return (
