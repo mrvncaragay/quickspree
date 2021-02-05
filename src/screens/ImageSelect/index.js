@@ -43,12 +43,7 @@ const ImageContainer = ({ navigation, url, productName }) => {
 				/>
 			</TouchableOpacity>
 
-			<IconButton
-				icon='chevron-right'
-				color={colors.primary}
-				size={24}
-				onPress={() => navigation.navigate('SearchStore')}
-			/>
+			<IconButton icon='chevron-right' color={colors.primary} size={24} onPress={updateUnsavedImage} />
 			<Modal visible={viewImage} transparent={true} onRequestClose={() => setViewImage(false)}>
 				<ImageViewer
 					imageUrls={image}
