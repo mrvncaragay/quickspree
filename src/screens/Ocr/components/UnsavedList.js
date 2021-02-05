@@ -3,12 +3,12 @@ import { View, FlatList } from 'react-native';
 import { Button, Divider, useTheme, ActivityIndicator } from 'react-native-paper';
 import { useStateValue } from '../../../context';
 import { removeData, storeData } from '../../../utils/asyncStorage';
-import EditUnsaved from './EditUnsaved';
+import UnsavedItem from './UnsavedItem';
 import { pageCrawler } from '../../../../config';
 import axios from 'axios';
 import { getASingleProductFromDB } from '../../../firebase';
 
-const Unsaved = ({ navigation }) => {
+const UnsavedList = ({ navigation }) => {
 	const [{ unsaved, store }, dispatch] = useStateValue();
 	const [uploading, setUploading] = useState(false);
 	const colors = useTheme();
@@ -57,7 +57,7 @@ const Unsaved = ({ navigation }) => {
 						style={{ marginTop: 10 }}
 						data={unsaved}
 						renderItem={({ item, index }) => (
-							<EditUnsaved
+							<UnsavedItem
 								product={item}
 								onPress={() => navigation.navigate('EditUnsaved', { product: item, index })}
 							/>
@@ -88,4 +88,4 @@ const Unsaved = ({ navigation }) => {
 	);
 };
 
-export default Unsaved;
+export default UnsavedList;
