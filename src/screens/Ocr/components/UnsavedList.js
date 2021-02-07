@@ -35,12 +35,12 @@ const UnsavedList = ({ navigation }) => {
 		}
 
 		// search product that does not have image
-		for (let i = 0; i < noUnsavedImage.length; i++) {
-			const response = await axios.get(pageCrawler(store.name, noUnsavedImage[i].productName));
-			if (response.data?.urls) {
-				newUnsaved.push({ ...noUnsavedImage[i], images: response.data.urls.map((url) => url.replace('197x', '697x')) });
-			}
-		}
+		// for (let i = 0; i < noUnsavedImage.length; i++) {
+		// 	const response = await axios.get(pageCrawler(store.name, noUnsavedImage[i].productName));
+		// 	if (response.data?.urls) {
+		// 		newUnsaved.push({ ...noUnsavedImage[i], images: response.data.urls.map((url) => url.replace('197x', '697x')) });
+		// 	}
+		// }
 
 		storeData('unsaved', newUnsaved);
 		dispatch({ type: 'setUnsaved', value: newUnsaved });

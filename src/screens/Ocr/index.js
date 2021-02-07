@@ -34,7 +34,7 @@ const OCR = ({ navigation }) => {
 				<ActivityIndicator style={{ flex: 1 }} />
 			) : store ? (
 				<>
-					<HeaderComponent store={store} colors={colors} navigation={navigation} />
+					{/* <HeaderComponent store={store} colors={colors} navigation={navigation} /> */}
 					<Ocr />
 				</>
 			) : (

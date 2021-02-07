@@ -5,8 +5,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from '../../../context';
 import { pageCrawler } from '../../../../config';
-import { saveBatchTempImagesToDB } from '../../../firebase';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { saveBatchTempImagesToDB } from '../../../firebase';
 import { storeData } from '../../../utils/asyncStorage';
 import axios from 'axios';
 
@@ -27,11 +26,10 @@ const EditUnsaved = ({ product, onPress }) => {
 	};
 
 	const handleSearchImage = async () => {
-		const response = await axios.get(pageCrawler(store.name, product.productName));
-
-		if (response.data?.urls) {
-			saveBatchTempImagesToDB(response.data.urls, `batch/${product.id}/images`);
-		}
+		// const response = await axios.get(pageCrawler(store.name, product.productName));
+		// if (response.data?.urls) {
+		// 	saveBatchTempImagesToDB(response.data.urls, `batch/${product.id}/images`);
+		// }
 	};
 
 	const handleDelete = async () => {
@@ -51,28 +49,18 @@ const EditUnsaved = ({ product, onPress }) => {
 				borderTopWidth: 1,
 				borderColor: 'lightgray',
 			}}>
-			{product?.images ? (
-				<MaterialCommunityIcons
-					name='image-search-outline'
-					size={70}
-					color='gray'
-					style={[
-						styles.small,
-						{
-							padding: 5,
-							alignSelf: 'center',
-						},
-					]}
-					onPress={() => navigation.navigate('ImageSelect', { urls: product.images, id: product.productName })}
+			{/* We dont need this, no image is fine, we click on it and find the image itself */}
+			<TouchableOpacity
+				onPress={() =>
+					product?.uri
+						? setViewImage(true)
+						: navigation.navigate('ImageSelect', { urls: product.images, id: product.productName })
+				}>
+				<Image
+					style={styles.small}
+					source={product?.uri ? { uri: product.uri } : require('../../../../assets/camera/noImage.png')}
 				/>
-			) : (
-				<TouchableOpacity onPress={() => (product?.uri ? setViewImage(true) : handleSearchImage())}>
-					<Image
-						style={styles.small}
-						source={product?.uri ? { uri: product.uri } : require('../../../../assets/camera/noImage.png')}
-					/>
-				</TouchableOpacity>
-			)}
+			</TouchableOpacity>
 
 			<TouchableOpacity style={{ flex: 1, width: 190, paddingHorizontal: 5 }} onPress={onPress}>
 				<CustomText containerStyle={{ width: 190 }} title>

@@ -30,6 +30,8 @@ export const getASingleProductFromDB = (path) => {
 
 // save product to db
 export const saveProductToDB = (product, path) => {
+	if (!product || !path) return;
+
 	return new Promise(async (resolve, reject) => {
 		const productRef = firebase.database().ref(path);
 		productRef.set(product, async (error) => {
@@ -43,11 +45,13 @@ export const saveProductToDB = (product, path) => {
 };
 
 // save batch item temp images to db
-export const saveBatchTempImagesToDB = (images, path) => {
+export const saveBatchDataToDB = (data, path) => {
+	if (!data || !path) return;
+
 	return new Promise(async (resolve, reject) => {
 		const batchRef = firebase.database().ref(path);
 
-		images.forEach((image) => {
+		data.forEach((image) => {
 			const url = image.replace('197x', '697x');
 			batchRef.push().set(url, async (error) => {
 				if (error) {
