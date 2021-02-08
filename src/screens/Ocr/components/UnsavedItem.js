@@ -52,9 +52,7 @@ const EditUnsaved = ({ product, onPress }) => {
 			{/* We dont need this, no image is fine, we click on it and find the image itself */}
 			<TouchableOpacity
 				onPress={() =>
-					product?.uri
-						? setViewImage(true)
-						: navigation.navigate('ImageSelect', { urls: product.images, id: product.productName })
+					product?.uri ? setViewImage(true) : navigation.navigate('ImageSelect', { id: product.productName })
 				}>
 				<Image
 					style={styles.small}

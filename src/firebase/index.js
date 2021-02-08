@@ -132,10 +132,10 @@ export const searchImagesFromDB = (filename) => {
 				const result = [];
 				for (let key in images) {
 					if (typeof images[key] === 'string') {
-						result.push(images[key]);
+						result.push({ key, url: images[key] });
 					} else {
 						for (let k in images[key]) {
-							result.push(images[key][k]);
+							result.push({ key: k, url: images[key][k] });
 						}
 					}
 				}

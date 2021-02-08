@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, Image, StyleSheet, View, Platform, Modal, TouchableOpacity, Text } from 'react-native';
+import { FlatList, Image, StyleSheet, View, Platform, Modal, TouchableOpacity } from 'react-native';
 import { Divider, useTheme, IconButton, Checkbox, Button, TextInput, ActivityIndicator } from 'react-native-paper';
 import { useStateValue } from '../../context';
 import { storeData } from '../../utils/asyncStorage';
@@ -88,8 +88,10 @@ const ImageContainer = ({ navigation, url, productName, setUrls, checkedUrls, di
 const ImageSelect = ({ route, navigation }) => {
 	const [{ store }] = useStateValue();
 	const [pulling, setPulling] = useState(false);
-	const [urls, setUrls] = useState(route.params.urs);
+	const [urls, setUrls] = useState([]);
+	const [pulledUrls, setPulledUrls] = useState([]);
 	const [form, setForm] = useState({
+		productName: route.params.id,
 		brand: '',
 		category: '',
 	});
@@ -105,27 +107,63 @@ const ImageSelect = ({ route, navigation }) => {
 
 	const handlePullImage = async () => {
 		setPulling(true);
-		const response = await axios.get(pageCrawler(store.name, route.params.id));
+		setUrls([]);
+		const response = await axios.get(pageCrawler(store.name, form.productName));
 		if (response.data?.urls) {
-			setUrls(response.data.urls.map((url) => url.replace('197x', '697x')));
+			setPulledUrls(response.data.urls.map((url) => url.replace('197x', '697x')));
 		}
 		setPulling(false);
 	};
 
 	const handleSearchImage = async () => {
+		setPulledUrls([]);
 		if (!form.brand) return;
 
 		const urls = await searchImagesFromDB(`urls/${form.brand.toLowerCase()}/${form?.category.toLowerCase() || ''}`);
 		setUrls(urls);
 	};
 
+	const handleDeleteImage = async () => {
+		if (!checkedUrls.length) return;
+
+		const newUrls = urls.filter((u) => {
+			if (!checkedUrls.includes(u.url)) {
+				return u;
+			}
+		});
+		// const urls = await searchImagesFromDB(`urls/${form.brand.toLowerCase()}/${form?.category.toLowerCase() || ''}`);
+		setUrls(newUrls);
+		setDisabledCheckedUrls([]);
+	};
+
+	const handleClear = async () => {
+		setPulledUrls([]);
+		setUrls([]);
+		setForm({
+			productName: route.params.id,
+			brand: '',
+			category: '',
+		});
+	};
+
 	return (
 		<>
-			<Text style={{ padding: 10, backgroundColor: '#fff', fontWeight: '600' }}>{route.params.id}</Text>
+			<TextInput
+				placeholder='Product name...'
+				style={{ backgroundColor: '#fff' }}
+				value={form.productName}
+				onChangeText={(productName) =>
+					setForm({
+						...form,
+						productName,
+					})
+				}
+			/>
 			<View style={{ flexDirection: 'row' }}>
 				<TextInput
 					placeholder='Brand name...'
 					style={{ flex: 1, backgroundColor: '#fff' }}
+					value={form.brand}
 					onChangeText={(brand) =>
 						setForm({
 							...form,
@@ -136,6 +174,7 @@ const ImageSelect = ({ route, navigation }) => {
 				<TextInput
 					placeholder='Category...'
 					style={{ flex: 1, backgroundColor: '#fff' }}
+					value={form.category}
 					onChangeText={(category) =>
 						setForm({
 							...form,
@@ -151,7 +190,7 @@ const ImageSelect = ({ route, navigation }) => {
 				<FlatList
 					contentContainerStyle={{ borderBottomWidth: 1, borderBottomColor: 'lightgray' }}
 					showsHorizontalScrollIndicator={true}
-					data={urls}
+					data={pulledUrls.length > 0 ? pulledUrls : urls.map((data) => data.url)}
 					renderItem={({ item, index }) => (
 						<ImageContainer
 							navigation={navigation}
@@ -172,11 +211,27 @@ const ImageSelect = ({ route, navigation }) => {
 					Pull
 				</Button>
 
+				<Button
+					color='darkred'
+					style={{ alignSelf: 'center', marginVertical: 10 }}
+					mode='contained'
+					onPress={handleDeleteImage}>
+					Delete
+				</Button>
+
 				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained' onPress={handleSearchImage}>
 					Search
 				</Button>
 
-				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained' onPress={handleUploadCheckedUrls}>
+				<Button style={{ alignSelf: 'center', marginVertical: 10 }} color='gray' mode='contained' onPress={handleClear}>
+					clear
+				</Button>
+
+				<Button
+					color='darkgreen'
+					style={{ alignSelf: 'center', marginVertical: 10 }}
+					mode='contained'
+					onPress={handleUploadCheckedUrls}>
 					Save
 				</Button>
 			</View>
