@@ -121,4 +121,30 @@ export const deleteImageToStorage = (filename) => {
 	});
 };
 
+// delete image to storage
+export const searchImagesFromDB = (filename) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const batchesRef = firebase.database().ref(filename);
+			batchesRef.on('value', (snapshot) => {
+				const images = snapshot.val();
+
+				const result = [];
+				for (let key in images) {
+					if (typeof images[key] === 'string') {
+						result.push(images[key]);
+					} else {
+						for (let k in images[key]) {
+							result.push(images[key][k]);
+						}
+					}
+				}
+				resolve(result);
+			});
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
 export default firebase;

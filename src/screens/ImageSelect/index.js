@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { FlatList, Image, StyleSheet, View, Platform, Modal, TouchableOpacity, Text } from 'react-native';
-import { Divider, useTheme, IconButton, Checkbox, Button, TextInput } from 'react-native-paper';
+import { Divider, useTheme, IconButton, Checkbox, Button, TextInput, ActivityIndicator } from 'react-native-paper';
 import { useStateValue } from '../../context';
 import { storeData } from '../../utils/asyncStorage';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import { saveBatchDataToDB } from '../../firebase';
+import { saveBatchDataToDB, searchImagesFromDB } from '../../firebase';
+import { pageCrawler } from '../../../config';
+import axios from 'axios';
 
 const ImageContainer = ({ navigation, url, productName, setUrls, checkedUrls, disabledUrls }) => {
 	const [{ unsaved }, dispatch] = useStateValue();
@@ -84,7 +86,9 @@ const ImageContainer = ({ navigation, url, productName, setUrls, checkedUrls, di
 };
 
 const ImageSelect = ({ route, navigation }) => {
-	const { urls, id } = route.params;
+	const [{ store }] = useStateValue();
+	const [pulling, setPulling] = useState(false);
+	const [urls, setUrls] = useState(route.params.urs);
 	const [form, setForm] = useState({
 		brand: '',
 		category: '',
@@ -99,9 +103,25 @@ const ImageSelect = ({ route, navigation }) => {
 		setCheckedUrls([]);
 	};
 
+	const handlePullImage = async () => {
+		setPulling(true);
+		const response = await axios.get(pageCrawler(store.name, route.params.id));
+		if (response.data?.urls) {
+			setUrls(response.data.urls.map((url) => url.replace('197x', '697x')));
+		}
+		setPulling(false);
+	};
+
+	const handleSearchImage = async () => {
+		if (!form.brand) return;
+
+		const urls = await searchImagesFromDB(`urls/${form.brand.toLowerCase()}/${form?.category.toLowerCase() || ''}`);
+		setUrls(urls);
+	};
+
 	return (
 		<>
-			<Text style={{ padding: 10, backgroundColor: '#fff', fontWeight: '600' }}>{id}</Text>
+			<Text style={{ padding: 10, backgroundColor: '#fff', fontWeight: '600' }}>{route.params.id}</Text>
 			<View style={{ flexDirection: 'row' }}>
 				<TextInput
 					placeholder='Brand name...'
@@ -125,29 +145,37 @@ const ImageSelect = ({ route, navigation }) => {
 				/>
 			</View>
 
-			<FlatList
-				contentContainerStyle={{ borderBottomWidth: 1, borderBottomColor: 'lightgray' }}
-				showsHorizontalScrollIndicator={true}
-				data={urls}
-				renderItem={({ item, index }) => (
-					<ImageContainer
-						navigation={navigation}
-						key={index}
-						url={item}
-						productName={id}
-						disabledUrls={disabledCheckedUrls}
-						setUrls={setCheckedUrls}
-						checkedUrls={checkedUrls}
-					/>
-				)}
-				keyExtractor={(item, index) => index.toString()}
-				ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
-			/>
-
+			{pulling ? (
+				<ActivityIndicator size='large' />
+			) : (
+				<FlatList
+					contentContainerStyle={{ borderBottomWidth: 1, borderBottomColor: 'lightgray' }}
+					showsHorizontalScrollIndicator={true}
+					data={urls}
+					renderItem={({ item, index }) => (
+						<ImageContainer
+							navigation={navigation}
+							key={index}
+							url={item}
+							productName={route.params.id}
+							disabledUrls={disabledCheckedUrls}
+							setUrls={setCheckedUrls}
+							checkedUrls={checkedUrls}
+						/>
+					)}
+					keyExtractor={(item, index) => index.toString()}
+					ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
+				/>
+			)}
 			<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained'>
+				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained' onPress={handlePullImage}>
+					Pull
+				</Button>
+
+				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained' onPress={handleSearchImage}>
 					Search
 				</Button>
+
 				<Button style={{ alignSelf: 'center', marginVertical: 10 }} mode='contained' onPress={handleUploadCheckedUrls}>
 					Save
 				</Button>

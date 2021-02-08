@@ -4,12 +4,10 @@ import { Button, Divider, useTheme, ActivityIndicator } from 'react-native-paper
 import { useStateValue } from '../../../context';
 import { removeData, storeData } from '../../../utils/asyncStorage';
 import UnsavedItem from './UnsavedItem';
-import { pageCrawler } from '../../../../config';
-import axios from 'axios';
-import firebase, { getASingleProductFromDB, saveProductToDB } from '../../../firebase';
+import firebase, { getASingleProductFromDB } from '../../../firebase';
 
 const UnsavedList = ({ navigation }) => {
-	const [{ unsaved, store }, dispatch] = useStateValue();
+	const [{ unsaved }, dispatch] = useStateValue();
 	const [uploading, setUploading] = useState(false);
 	const colors = useTheme();
 
@@ -33,14 +31,6 @@ const UnsavedList = ({ navigation }) => {
 				noUnsavedImage.push(copyUnsaved[i]);
 			}
 		}
-
-		// search product that does not have image
-		// for (let i = 0; i < noUnsavedImage.length; i++) {
-		// 	const response = await axios.get(pageCrawler(store.name, noUnsavedImage[i].productName));
-		// 	if (response.data?.urls) {
-		// 		newUnsaved.push({ ...noUnsavedImage[i], images: response.data.urls.map((url) => url.replace('197x', '697x')) });
-		// 	}
-		// }
 
 		storeData('unsaved', newUnsaved);
 		dispatch({ type: 'setUnsaved', value: newUnsaved });
@@ -82,7 +72,7 @@ const UnsavedList = ({ navigation }) => {
 						ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
 					/>
 					{unsaved.length > 0 && (
-						<View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
 							<Button
 								style={{ alignSelf: 'flex-end', marginVertical: 10, backgroundColor: 'firebrick' }}
 								mode='contained'
@@ -91,15 +81,15 @@ const UnsavedList = ({ navigation }) => {
 							</Button>
 
 							<Button
-								style={{ alignSelf: 'flex-end', marginVertical: 10, marginLeft: 10 }}
+								style={{ alignSelf: 'flex-end', marginVertical: 10 }}
 								mode='contained'
 								onPress={handleFetchImageItems}>
-								Fetch Images
+								Sync
 							</Button>
 
 							<Button
 								color={colors.primary}
-								style={{ alignSelf: 'flex-end', marginVertical: 10, marginLeft: 10 }}
+								style={{ alignSelf: 'flex-end', marginVertical: 10 }}
 								mode='contained'
 								onPress={handleSaveItemsToDB}>
 								SEND
