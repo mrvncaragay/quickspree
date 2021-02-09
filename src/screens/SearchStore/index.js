@@ -14,8 +14,7 @@ const Store = ({ store, navigation }) => {
 				dispatch({ type: 'setStore', value: store });
 				storeData('store', store);
 				navigation.goBack();
-			}}
-		>
+			}}>
 			<Surface style={styles.store}>
 				<View>
 					<Text>{`${store.city}, ${store.state}`}</Text>

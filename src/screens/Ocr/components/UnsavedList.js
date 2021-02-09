@@ -26,7 +26,7 @@ const UnsavedList = ({ navigation }) => {
 			const product = await getASingleProductFromDB(`products/${copyUnsaved[i].productName.toLowerCase()}`);
 
 			if (product) {
-				newUnsaved.push(product);
+				newUnsaved.push({ ...copyUnsaved[i], ...product });
 			} else {
 				noUnsavedImage.push(copyUnsaved[i]);
 			}
@@ -54,13 +54,12 @@ const UnsavedList = ({ navigation }) => {
 	};
 
 	return (
-		<View style={{ flex: 1, paddingHorizontal: 20, justifyContent: 'center' }}>
+		<View style={{ flex: 1, justifyContent: 'center' }}>
 			{uploading ? (
 				<ActivityIndicator size='large' />
 			) : (
 				<>
 					<FlatList
-						style={{ marginTop: 10 }}
 						data={unsaved}
 						renderItem={({ item, index }) => (
 							<UnsavedItem

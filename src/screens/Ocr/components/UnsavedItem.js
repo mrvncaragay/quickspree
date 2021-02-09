@@ -9,7 +9,7 @@ import { pageCrawler } from '../../../../config';
 import { storeData } from '../../../utils/asyncStorage';
 import axios from 'axios';
 
-const EditUnsaved = ({ product, onPress }) => {
+const UnsavedItem = ({ product, onPress }) => {
 	const [{ unsaved, store }, dispatch] = useStateValue();
 	const navigation = useNavigation();
 	const { colors } = useTheme();
@@ -99,4 +99,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default EditUnsaved;
+export default UnsavedItem;
