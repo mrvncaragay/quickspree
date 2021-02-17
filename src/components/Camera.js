@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, View, Image } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
+import shortid from 'shortid';
 
 export const Constants = {
 	...RNCamera.Constants,
@@ -47,7 +48,8 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 					size = findProductSize(value);
 
 					if (value) {
-						quantity = value.split(' ')[0];
+						const q = value.split(' ')[0];
+						quantity = q === 'lx' ? '1x' : q;
 					}
 
 					productName = value.replace(/ *\([^)]*\) */g, '');
@@ -70,7 +72,7 @@ const Camera = ({ onRead, handleBarcodeScan, product }) => {
 						.join(' ');
 
 					if (productName && size) {
-						products.push({ ...product, size, quantity, aisleCode, productName });
+						products.push({ ...product, size, quantity, aisleCode, productName, id: shortid.generate() });
 					}
 				}
 			});

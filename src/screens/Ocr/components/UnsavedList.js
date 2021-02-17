@@ -6,7 +6,7 @@ import { removeData, storeData } from '../../../utils/asyncStorage';
 import UnsavedItem from './UnsavedItem';
 import firebase, { getASingleProductFromDB } from '../../../firebase';
 
-const UnsavedList = ({ navigation }) => {
+const UnsavedList = () => {
 	const [{ unsaved }, dispatch] = useStateValue();
 	const [uploading, setUploading] = useState(false);
 	const colors = useTheme();
@@ -21,7 +21,7 @@ const UnsavedList = ({ navigation }) => {
 		const copyUnsaved = [...unsaved];
 		const newUnsaved = [];
 		const noUnsavedImage = [];
-		// check first the db if the product exist, so that we dont search for it
+		// check first the db if the product exist, so that we dont scrape the image
 		for (let i = 0; i < copyUnsaved.length; i++) {
 			const product = await getASingleProductFromDB(`products/${copyUnsaved[i].productName.toLowerCase()}`);
 
@@ -32,24 +32,30 @@ const UnsavedList = ({ navigation }) => {
 			}
 		}
 
-		storeData('unsaved', newUnsaved);
-		dispatch({ type: 'setUnsaved', value: newUnsaved });
+		storeData('unsaved', [...newUnsaved, ...noUnsavedImage]);
+		dispatch({ type: 'setUnsaved', value: [...newUnsaved, ...noUnsavedImage] });
 		setUploading(false);
 	};
 
 	const handleSaveItemsToDB = async () => {
 		setUploading(true);
 		const batchRef = firebase.database().ref('batch/');
-		unsaved.forEach(async (item) => {
-			batchRef.push().set(item, (error) => {
-				if (error) {
-					console.log(error);
-				} else {
-					removeData('unsaved');
-					dispatch({ type: 'setUnsaved', value: [] });
-				}
+		unsaved
+			.filter((data) => data.urls.length > 0)
+			.forEach(async (item) => {
+				delete item.id;
+				batchRef.push().set(item, (error) => {
+					if (error) {
+						console.log(error);
+					} else {
+						storeData(
+							'unsaved',
+							unsaved.filter((data) => data.urls.length === 0),
+						);
+						dispatch({ type: 'setUnsaved', value: [] });
+					}
+				});
 			});
-		});
 		setUploading(false);
 	};
 
@@ -60,13 +66,8 @@ const UnsavedList = ({ navigation }) => {
 			) : (
 				<>
 					<FlatList
-						data={unsaved}
-						renderItem={({ item, index }) => (
-							<UnsavedItem
-								product={item}
-								onPress={() => navigation.navigate('EditUnsaved', { product: item, index })}
-							/>
-						)}
+						data={unsaved.sort((a, b) => a.aisleCode > b.aisleCode)}
+						renderItem={({ item, index }) => <UnsavedItem product={item} />}
 						keyExtractor={(_, index) => index.toString()}
 						ItemSeparatorComponent={() => <Divider style={{ height: 10, backgroundColor: '#fff' }} />}
 					/>

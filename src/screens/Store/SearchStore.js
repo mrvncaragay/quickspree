@@ -8,13 +8,15 @@ import firebase from '../../firebase';
 const Store = ({ store, navigation }) => {
 	const [_, dispatch] = useStateValue();
 	const { colors } = useTheme();
+
 	return (
 		<TouchableRipple
 			onPress={() => {
 				dispatch({ type: 'setStore', value: store });
 				storeData('store', store);
 				navigation.goBack();
-			}}>
+			}}
+		>
 			<Surface style={styles.store}>
 				<View>
 					<Text>{`${store.city}, ${store.state}`}</Text>

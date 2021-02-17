@@ -6,7 +6,7 @@ import { Header as HeaderComponent, SelectStore } from '../../components';
 import { readData } from '../../utils/asyncStorage';
 import Ocr from './components/Ocr';
 
-const OCR = ({ navigation }) => {
+const OCR = ({ navigation, route }) => {
 	const { colors } = useTheme();
 	const [{ store, isLoading }, dispatch] = useStateValue();
 
@@ -35,7 +35,7 @@ const OCR = ({ navigation }) => {
 			) : store ? (
 				<>
 					{/* <HeaderComponent store={store} colors={colors} navigation={navigation} /> */}
-					<Ocr />
+					{route.name === 'OCR' && <Ocr />}
 				</>
 			) : (
 				<SelectStore colors={colors} navigation={navigation} />

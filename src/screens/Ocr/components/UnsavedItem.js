@@ -1,20 +1,14 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, Image, StyleSheet, Modal, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useTheme, Text, Button } from 'react-native-paper';
-import ImageViewer from 'react-native-image-zoom-viewer';
 import { useNavigation } from '@react-navigation/native';
 import { useStateValue } from '../../../context';
-import { pageCrawler } from '../../../../config';
-// import { saveBatchTempImagesToDB } from '../../../firebase';
 import { storeData } from '../../../utils/asyncStorage';
-import axios from 'axios';
 
-const UnsavedItem = ({ product, onPress }) => {
-	const [{ unsaved, store }, dispatch] = useStateValue();
+const UnsavedItem = ({ product }) => {
+	const [{ unsaved }, dispatch] = useStateValue();
 	const navigation = useNavigation();
 	const { colors } = useTheme();
-	const [viewImage, setViewImage] = useState(false);
-	const image = [{ url: product?.uri ? product?.uri : '../../../../assets/camera/noImage.png' }];
 
 	const CustomText = ({ label, children, containerStyle }) => {
 		return (
@@ -23,13 +17,6 @@ const UnsavedItem = ({ product, onPress }) => {
 				<Text style={{ flex: 1, color: colors.dark600, fontSize: 16 }}>{children}</Text>
 			</View>
 		);
-	};
-
-	const handleSearchImage = async () => {
-		// const response = await axios.get(pageCrawler(store.name, product.productName));
-		// if (response.data?.urls) {
-		// 	saveBatchTempImagesToDB(response.data.urls, `batch/${product.id}/images`);
-		// }
 	};
 
 	const handleDelete = async () => {
@@ -49,18 +36,14 @@ const UnsavedItem = ({ product, onPress }) => {
 				borderTopWidth: 1,
 				borderColor: 'lightgray',
 			}}>
-			{/* We dont need this, no image is fine, we click on it and find the image itself */}
-			<TouchableOpacity
-				onPress={() =>
-					product?.uri ? setViewImage(true) : navigation.navigate('ImageSelect', { id: product.productName })
-				}>
-				<Image
-					style={styles.small}
-					source={product?.uri ? { uri: product.uri } : require('../../../../assets/camera/noImage.png')}
-				/>
-			</TouchableOpacity>
+			<Image
+				style={styles.small}
+				source={product.urls.length > 0 ? { uri: product.urls[0] } : require('../../../../assets/camera/noImage.png')}
+			/>
 
-			<TouchableOpacity style={{ flex: 1, width: 190, paddingHorizontal: 5 }} onPress={onPress}>
+			<TouchableOpacity
+				style={{ flex: 1, width: 190, paddingHorizontal: 5 }}
+				onPress={() => navigation.navigate('EditUnsaved', { product })}>
 				<CustomText containerStyle={{ width: 190 }} title>
 					<Text style={{ fontWeight: '600' }}>{product?.quantity} </Text>
 					{product?.productName}
@@ -79,15 +62,6 @@ const UnsavedItem = ({ product, onPress }) => {
 				onPress={handleDelete}>
 				delete
 			</Button>
-			<Modal visible={viewImage} transparent={true} onRequestClose={() => setViewImage(false)}>
-				<ImageViewer
-					imageUrls={image}
-					renderIndicator={() => null}
-					onSwipeDown={() => setViewImage(false)}
-					enableSwipeDown
-					backgroundColor='white'
-				/>
-			</Modal>
 		</View>
 	);
 };

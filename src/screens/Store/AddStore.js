@@ -10,6 +10,7 @@ const AddStore = ({ navigation }) => {
 		state: '',
 		zipcode: '',
 		storeNumber: null,
+		hasAisleHelper: null,
 	});
 
 	const [loading, setLoading] = useState(false);
@@ -69,6 +70,16 @@ const AddStore = ({ navigation }) => {
 					label='Store number'
 					value={store.storeNumber}
 					onChangeText={(storeNumber) => setStore({ ...store, storeNumber })}
+				/>
+				<TextInput
+					style={{ marginVertical: 5 }}
+					mode='outlined'
+					label='Has aisle helper?'
+					placeholder='True or false'
+					value={store.hasAisleHelper}
+					onChangeText={(hasAisleHelper) =>
+						setStore({ ...store, hasAisleHelper: hasAisleHelper.toLowerCase() === 'true' })
+					}
 				/>
 
 				<Button style={{ marginTop: 15, padding: 5 }} mode='contained' onPress={handleSubmit}>

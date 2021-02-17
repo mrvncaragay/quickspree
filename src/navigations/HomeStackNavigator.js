@@ -3,7 +3,6 @@ import { AddStore, SearchStore } from '../screens';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomStackNavigator from './BottomTabNavigator';
 import EditUnsaved from '../screens/Ocr/components/EditUnsaved';
-import ImageSelect from '../screens/ImageSelect';
 
 const Stack = createStackNavigator();
 
@@ -13,7 +12,6 @@ const CreateAdd = () => (
 		<Stack.Screen name='SearchStore' component={SearchStore} options={{ headerShown: false }} />
 		<Stack.Screen name='AddStore' component={AddStore} options={{ headerShown: false }} />
 		<Stack.Screen name='EditUnsaved' component={EditUnsaved} options={{ headerShown: false }} />
-		<Stack.Screen name='ImageSelect' component={ImageSelect} options={{ headerShown: false }} />
 	</Stack.Navigator>
 );
 
